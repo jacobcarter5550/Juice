@@ -263,7 +263,7 @@ const lineData2 = {
                             <Line options={options} data={lineData2} />
                         </div>
                     </aside>
-                    <h1>Average number of votes across all propsals : {(added/length).toFixed(2)}/{orange?.followersCount}</h1>
+                    <h1>Average number of votes across all propsals : <span style={{fontWeight:'500'}}>{(added/length).toFixed(2)}/{orange?.followersCount}</span></h1>
                     <h1>Proposals ↓</h1>
                     <div className={styles.props} >
                         {proposals?.data.proposals.map((proposal, ind)=>{
