@@ -3,6 +3,7 @@ import {useQuery, gql} from '@apollo/client'
 import { useDispatch } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { actionCreators } from './Redux/allActions'
+import { isMobile } from 'react-device-detect'
 
 function ProposalItem({proposal, index}) {
 
@@ -82,8 +83,10 @@ function ProposalItem({proposal, index}) {
 	}
 	},[votesFromProp.data])
 
+	const width = isMobile ? '20vh' : '200px'
+	const font = isMobile ? '.9em' : ''
 
-	return (<div style={{width:'200px', border:'2px solid black', borderRadius:'6px', height:'200px', margin:'15px'}}>
+	return (<div style={{width:width, padding:'10px', border:'2px solid black', borderRadius:'6px', margin:'15px', fontSize: font}}>
 	<h3>{proposal.title}</h3>
 	<h3>Votes : {votesFromProp.data?.votes.length}</h3>
 	</div>)

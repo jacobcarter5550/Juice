@@ -2,6 +2,7 @@ import '../styles/globals.css'
 import { ApolloClient, NormalizedCacheObject, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { Provider } from 'react-redux'
 import { store } from '../components/Redux/store'
+import Head from 'next/head'
 
 function MyApp({ Component, pageProps }) {
 
@@ -11,6 +12,9 @@ function MyApp({ Component, pageProps }) {
   });
 
   return(<Provider store={store}>
+      <Head>
+        <meta name="apple-mobile-web-app-status-bar-style" content="#000000"/>
+      </Head>
       <ApolloProvider client={client}>
         <Component {...pageProps} />
       </ApolloProvider>

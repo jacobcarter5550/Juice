@@ -1,3 +1,4 @@
+// 0x16D56FA9b31479315a05b0b31F83D88f5F8Ca6e4
 import {useEffect, useState} from 'react'
 import { useQuery } from '@apollo/client'
 import { gql } from '@apollo/client'
@@ -6,7 +7,7 @@ import { useSelector } from 'react-redux'
 import {Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend,} from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as ToolTippy, ResponsiveContainer } from 'recharts';
-import styles from '../styles/Master.module.scss'
+import styles from '../styles/MasterMobile.module.scss'
 
 
 function DAO() {
@@ -72,7 +73,7 @@ const labels = ["January", "February", "March", "April", "May", "June",
 				setTimeout(() => {
 					
 				  setNfts('hey!')
-				}, 6000);
+				}, 5000);
 		},[])
 
 		const EXCHANGE_RATES = gql`query Spaces($id_in: [String]) {
@@ -172,7 +173,7 @@ const lineData = {
 	labels,
 	datasets: [
 		{
-			label: 'Proposals Each Month',
+			label: '',
 			data: mapped.map((item) =>{return item.count}),
 			borderColor: '#10F9D7',
 			backgroundColor: '#10F9D7',
@@ -180,7 +181,7 @@ const lineData = {
 	]}
 
 const lineData2 = {
-	labels:proposals?.data?.proposals.map((item)=>{return `${item.title.slice(0, 12)}...`}),
+	labels:proposals?.data?.proposals.map((item)=>{return `${item.title.slice(0, 9)}...`}),
 	datasets: [
 		{
 			label: 'Votes per Proposals',
@@ -197,17 +198,23 @@ const lineData2 = {
 	return (<>
 		{nfts ? <div className={styles.home}>
 			<aside className={styles.sideBar}>
-                <img src="https://ipfs.io/ipfs/QmfQ5Wo9DBg51mQJ7L2bnA3uD3xdGMyypRWdnht2ZgqsSw" alt="" />
-                <img src="/home.svg" alt="" />
+                <img style={{width:'75px', borderRadius:'20px' }} src="https://ipfs.io/ipfs/QmfQ5Wo9DBg51mQJ7L2bnA3uD3xdGMyypRWdnht2ZgqsSw" alt="" />
+                <h1 style={{margin:'0px'}}>ORANGEDAO</h1>
             </aside>
 			<aside className={styles.main}>
                 <div className={styles.topBar} >
-                    <h1 style={{margin:'0px'}}>ORANGEDAO</h1>
-                    <h1 >Admins: {orange.admins.length}</h1>
-                    <h1 >Members: {orange.members.length}</h1>
-                    <h1 >Followers: {orange?.followersCount}</h1>
+                    <aside >
+                        <h1 >Admins</h1>
+                        <h1 >Members</h1>
+                        <h1 >Followers</h1>
+                    </aside>
+                    <aside >
+                        <h1 >{orange.admins.length}</h1>
+                        <h1 >{orange.members.length}</h1>
+                        <h1 >{orange?.followersCount}</h1>
+                    </aside>
                 </div>
-                <div className={styles.stats} >
+                <div  className={styles.stats} >
                     <aside className={styles.data} >
                         <div>
                             <h1>Proposals Each Months</h1>
@@ -218,9 +225,9 @@ const lineData2 = {
                             <Line options={options} data={lineData2} />
                         </div>
                     </aside>
-                    <h1>Average number of votes across all proposals : <span style={{fontWeight:'500'}}>{(added/length).toFixed(2)}/{orange?.followersCount}</span></h1>
-                    <h1>Proposals ↓</h1>
-                    <div className={styles.props} >
+                    <h1 className={styles.head1} >Average number of votes across all proposals : <span >{(added/length).toFixed(2)}/{orange?.followersCount}</span></h1>
+                    <h1 className={styles.head2}>Proposals ↓</h1>
+                    <div  className={styles.props} >
                         {proposals?.data.proposals.map((proposal, ind)=>{
                             return <ProposalItem key={ind} index={ind} proposal={proposal} />
                         })}
