@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux'
 import { actionCreators } from './Redux/allActions'
 import { isMobile } from 'react-device-detect'
 
-function ProposalItem({proposal, index}) {
+function ProposalItem({proposal, index, setSel, setOpen, open}) {
 
 	const dispatch = useDispatch()
 	const { addMonth, addVotingTotal, addYear, addID, addBatch} = bindActionCreators(actionCreators, dispatch)
@@ -72,11 +72,7 @@ function ProposalItem({proposal, index}) {
 	const month = monthNames[new Date(data?.proposal.created * 1000).getMonth()]
 	const year = new Date(data?.proposal.created * 1000).getUTCFullYear();
 
-
-
-
 	const votesFromProp = useQuery(votes)
-
 
 	useEffect(()=>{
 		if(votesFromProp.data?.votes) {
@@ -86,7 +82,6 @@ function ProposalItem({proposal, index}) {
 			addID(ids)
 		}
 	},[votesFromProp.data])
-
 
 	useEffect(()=>{
 	if(month!== undefined){
@@ -112,7 +107,7 @@ function ProposalItem({proposal, index}) {
 	const width = isMobile ? '20vh' : '200px'
 	const font = isMobile ? '.9em' : ''
 
-	return (<div style={{width:width, padding:'10px', border:'2px solid black', borderRadius:'6px', margin:'15px', fontSize: font}}>
+	return (<div onClick={()=>{setSel(index), setOpen(!open)}} style={{width:width, padding:'10px', border:'2px solid black', borderRadius:'6px', margin:'15px', fontSize: font, cursor:'pointer'}}>
 	<h3>{proposal.title}</h3>
 	<h3>Votes : {votesFromProp.data?.votes.length}</h3>
 	</div>)

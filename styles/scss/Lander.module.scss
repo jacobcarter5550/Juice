@@ -31,8 +31,7 @@
     .main{
         width: 95%;
         height: 100%;
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(20px);
+        background: rgba(0, 0, 0, 0.1);
         border-radius:  30px;
         border: 1.5px solid whitesmoke;
 
@@ -72,8 +71,11 @@
 
             .props{
                 width: 95%;
-                display: -webkit-inline-box;
+                display: flex;
                 overflow: scroll;
+                flex-wrap: wrap;
+                height: 300px;
+                margin-bottom: 40px;
 
                 div{
                     padding: 10px;

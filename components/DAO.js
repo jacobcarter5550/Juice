@@ -7,6 +7,7 @@ import {Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement,
 import { Line, Pie } from 'react-chartjs-2';
 import styles from '../styles/Master.module.scss'
 import Radial from './Radial'
+import PropModal from './PropModal'
 
 function DAO() {
 	ChartJS.register(
@@ -198,7 +199,7 @@ function DAO() {
 	const filter = [...new Set(agg)]
 	const nums ={}
 	agg.forEach(function (x) { nums[x] = (nums[x] || 0) + 1; });
-//Final object with each wallet and it's vot
+	//Final object with each wallet and it's vot
 	const arr = filter.map((item)=>{
 		return nums[item]
 	})
@@ -237,13 +238,16 @@ function DAO() {
 			},
 		]}
 
+	const [open, setOpen] = useState(false)
+	const [selected, setSelected] = useState()
+
 	return (<>
 		{nfts ? <div className={styles.home}>
 			<aside className={styles.sideBar}>
                 <img src="https://ipfs.io/ipfs/QmfQ5Wo9DBg51mQJ7L2bnA3uD3xdGMyypRWdnht2ZgqsSw" alt="" />
                 <img src="/home.svg" alt="" />
             </aside>
-			<aside style={{overflow:'scroll'}} className={styles.main}>
+			<aside style={{overflow:'scroll',backdropFilter: open ? 'none' : 'blur(20px)'}} className={styles.main}>
                 <div className={styles.topBar} >
                     <h1 style={{margin:'0px'}}>ORANGEDAO</h1>
                     <h1 >Admins: {orange.admins.length}</h1>
@@ -279,7 +283,10 @@ function DAO() {
                     <div className={styles.props} >
 						{!proposals.loading ? 
 							<>{proposals?.data.proposals.map((proposal, ind)=>{
-								return <ProposalItem key={ind} index={ind} proposal={proposal} />
+								return <>
+								{open && selected == ind && <PropModal setSel={setSelected} setOpen={setOpen} open={open} index={ind} proposal={proposal}/>}
+								<ProposalItem key={ind} index={ind} proposal={proposal} setSel={setSelected} setOpen={setOpen} open={open} />
+								</>
 							})}</>
 						:
 							<h1>Loading</h1>
@@ -295,3 +302,6 @@ function DAO() {
 }
 
 export default DAO
+
+
+//How many snapshot props come from gauntlet derived data

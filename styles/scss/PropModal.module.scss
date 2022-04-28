@@ -1,0 +1,38 @@
+.modal{
+    backdrop-filter: blur(1px);
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,0,0,0.4);
+
+    .inner{
+        width: 70vw;
+        height: 60vh;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        background-color: #c4c4c4;
+        margin-top: 150px;
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 30px;
+        border: 1.5px solid whitesmoke;
+        color: #ffffff;
+        overflow: scroll;
+        padding: 20px;
+
+        h1{
+            font-size: 1.5em;
+        }
+
+        aside{
+            display: flex;
+            justify-content: left;
+
+            h1{
+                margin: 0px;
+            }
+        }
+    }
+}
