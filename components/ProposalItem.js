@@ -1,4 +1,4 @@
-import {useEffect} from 'react'
+import {useState, useEffect} from 'react'
 import {useQuery, gql} from '@apollo/client'
 import { useDispatch } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -8,7 +8,7 @@ import { isMobile } from 'react-device-detect'
 function ProposalItem({proposal, index}) {
 
 	const dispatch = useDispatch()
-	const { addMonth, addVotingTotal } = bindActionCreators(actionCreators, dispatch)
+	const { addMonth, addVotingTotal, addYear, addID, addBatch} = bindActionCreators(actionCreators, dispatch)
 
 	const individualProp = gql`query { proposal(id:"${proposal.id}") {
 	id
@@ -67,20 +67,46 @@ function ProposalItem({proposal, index}) {
 	}
 	}`
 
-	const votesFromProp = useQuery(votes)
-
 	const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
 	const month = monthNames[new Date(data?.proposal.created * 1000).getMonth()]
+	const year = new Date(data?.proposal.created * 1000).getUTCFullYear();
+
+
+
+
+	const votesFromProp = useQuery(votes)
+
 
 	useEffect(()=>{
-	if(month!== undefined){addMonth(month)}
+		if(votesFromProp.data?.votes) {
+			const ids = votesFromProp.data.votes.map((item)=>{
+				return item.voter
+			})
+			addID(ids)
+		}
+	},[votesFromProp.data])
+
+
+	useEffect(()=>{
+	if(month!== undefined){
+		addMonth(`${month} ${year}`) 
+		addYear(year)
+		
+	}
 	},[data?.proposal.created])
 
 	useEffect(()=>{
-	if(votesFromProp.data !== undefined && votesFromProp.data.votes.length !== 0){
-		addVotingTotal({total :votesFromProp.data.votes.length, position:index})
-	}
+		if(votesFromProp.data !== undefined && votesFromProp.data.votes.length !== 0){
+			addVotingTotal({total :votesFromProp.data.votes.length, position:index})
+			const obj = {
+			time : `${month} ${year}`,
+			votes: votesFromProp.data.votes.map((item)=>{
+				return item.voter
+			})
+		}
+		addBatch(obj)
+		}
 	},[votesFromProp.data])
 
 	const width = isMobile ? '20vh' : '200px'

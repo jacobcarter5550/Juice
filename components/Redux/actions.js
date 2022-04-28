@@ -16,3 +16,30 @@ export const addVotingTotal = (total) => {
         })
     }
 }
+
+export const addYear = (total) => {
+    return (dispatch) => {
+        return dispatch({
+            type : 'addYear',
+            payload : total
+        })
+    }
+}
+
+export const addID = (total) => {
+    return (dispatch) => {
+        return dispatch({
+            type : 'addID',
+            payload : total
+        })
+    }
+}
+
+export const addBatch = (total) => {
+    return (dispatch) => {
+        return dispatch({
+            type : 'addBatch',
+            payload : total
+        })
+    }
+}

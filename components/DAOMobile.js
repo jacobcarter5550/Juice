@@ -8,9 +8,12 @@ import {Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement,
 import { Line } from 'react-chartjs-2';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as ToolTippy, ResponsiveContainer } from 'recharts';
 import styles from '../styles/MasterMobile.module.scss'
+import Radial from './Radial'
 
 
 function DAO() {
+	const ids = useSelector((state)=>state.ids)
+
 
 	ChartJS.register(
 	CategoryScale,
@@ -21,6 +24,8 @@ function DAO() {
 	Tooltip,
 	Legend
 );
+
+const wpm = useSelector((state)=>state.wPM)
 
 
 const options = {
@@ -61,23 +66,23 @@ const options = {
 	},
 };
 
-const labels = ["January", "February", "March", "April", "May", "June",
-	"July", "August", "September", "October", "November", "December"
-]
-
 		const [nfts, setNfts] = useState()
 		const months = useSelector((state)=>state.months)
+		const years = useSelector((state)=>state.years)
+
+		const uniq = [...new Set(years)]
+		const uniq2 = [...new Set(months)]
+
+		const accurateYears = uniq.map((item)=>{
+			return uniq2.filter((it)=>it.includes(`${item}`))
+		})
+
+		const merged = [].concat.apply([], accurateYears).reverse()
+
 		const votesToAverage = useSelector((state)=>state.votingTotals)
-
-		useEffect(()=>{
-				setTimeout(() => {
-					
-				  setNfts('hey!')
-				}, 5000);
-		},[])
-
+		
 		const EXCHANGE_RATES = gql`query Spaces($id_in: [String]) {
-				spaces(where: {id_in: $id_in}) {
+			spaces(where: {id_in: $id_in}) {
 						id
 						name
 						about
@@ -116,14 +121,18 @@ const labels = ["January", "February", "March", "April", "May", "June",
 				filters {
 						minScore
 						onlyMembers
-				}
+					}
 		},
 		}`
 
-			const { loading, error, data } = useQuery(EXCHANGE_RATES, {
-				variables: {id_in: ["orangedaoxyz.eth", null]},
-			})
+		const { loading, error, data } = useQuery(EXCHANGE_RATES, {
+			variables: {id_in: ["orangedaoxyz.eth", null]},
+		})
 
+		useEffect(()=>{
+			data !== undefined ? setNfts('asd'): null
+		},[data])
+		
 		const orange = data?.spaces[0]
 
 		const propsQuery = gql`query {
@@ -157,23 +166,18 @@ const labels = ["January", "February", "March", "April", "May", "June",
 
 		months.forEach(function (x) { stats[x] = (stats[x] || 0) + 1; });
 
-		const monthNames = ["January", "February", "March", "April", "May", "June",
-	"July", "August", "September", "October", "November", "December"
-]
-
-	const mapped = monthNames.map((item)=>{
+	const mapped = merged.map((item)=>{
 		return {
 			month : item,
 			count : stats[item] ?? 0
 		}
 	})
 
-
 const lineData = {
-	labels,
+	labels: merged.map((item)=>{return `${item.slice(0,3)} ${item.slice(-4)}`}),
 	datasets: [
 		{
-			label: '',
+			label: 'Proposals Each Month',
 			data: mapped.map((item) =>{return item.count}),
 			borderColor: '#10F9D7',
 			backgroundColor: '#10F9D7',
@@ -181,7 +185,7 @@ const lineData = {
 	]}
 
 const lineData2 = {
-	labels:proposals?.data?.proposals.map((item)=>{return `${item.title.slice(0, 9)}...`}),
+	labels:proposals?.data?.proposals.map((item)=>{return `${item.title.slice(0, 6)}...`}),
 	datasets: [
 		{
 			label: 'Votes per Proposals',
@@ -195,6 +199,52 @@ const lineData2 = {
 	const added = votesToAverage.map((val)=>{return val.total}).reduce((x, y) => x + y, 0)
 	const length = votesToAverage.length
 
+	const agg = [].concat.apply([], ids)
+	const filter = [...new Set(agg)]
+	const nums ={}
+	agg.forEach(function (x) { nums[x] = (nums[x] || 0) + 1; });
+//Final object with each wallet and it's vot
+
+	const arr = filter.map((item)=>{
+		return nums[item]
+	})
+
+	const [container, setConatiner] = useState([])
+
+	useEffect(()=>{
+		if(wpm != []) {
+			const uniqueWalletsPerMonth = merged.map((item)=>{
+				const trying = wpm.map((month)=>{
+					if(month.time == item){
+						return month.votes
+					} else {
+						return
+					}
+				}).filter((item)=> item !== undefined)
+
+				return {
+					time: item,
+					arry: trying
+				}
+			})
+			const sorted = uniqueWalletsPerMonth.map((arry)=>{
+				const gathered = [].concat.apply([], arry.arry)
+				return [...new Set(gathered)]
+			})
+			setConatiner(sorted)
+		}
+	},[wpm])
+
+	const lineData3 = {
+		labels: merged.map((item)=>{return `${item.slice(0,3)} ${item.slice(-4)}`}),
+		datasets: [
+			{
+				label: 'Unique Wallet Votes Each Month',
+				data: container.map((item) =>{return item.length}),
+				borderColor: '#10F9D7',
+				backgroundColor: '#10F9D7',
+			},
+		]}
 	return (<>
 		{nfts ? <div className={styles.home}>
 			<aside className={styles.sideBar}>
@@ -225,12 +275,29 @@ const lineData2 = {
                             <Line options={options} data={lineData2} />
                         </div>
                     </aside>
-                    <h1 className={styles.head1} >Average number of votes across all proposals : <span >{(added/length).toFixed(2)}/{orange?.followersCount}</span></h1>
+					<aside className={styles.data}>
+						<div>
+							<h1>Unique Wallet Votes Each Month</h1>
+							<Line options={options} data={lineData3} />
+						</div>
+						<div>
+							{Object.keys(nums).length !== 0 ? <>
+								<h1 style={{marginBottom:'50px'}}>Number of times unique wallets have voted</h1>
+								<Radial nums={arr}/>
+							</> :
+							<h1>Loading</h1>}
+						</div>
+					</aside>
+                    <h1 className={styles.head1} >Average number of users voting across all proposals :  <span >{(added/length).toFixed(2)}/{orange?.followersCount}</span></h1>
                     <h1 className={styles.head2}>Proposals ↓</h1>
                     <div  className={styles.props} >
-                        {proposals?.data.proposals.map((proposal, ind)=>{
-                            return <ProposalItem key={ind} index={ind} proposal={proposal} />
-                        })}
+						{!proposals.loading ? 
+							<>{proposals?.data.proposals.map((proposal, ind)=>{
+								return <ProposalItem key={ind} index={ind} proposal={proposal} />
+							})}</>
+						:
+							<h1>Loading</h1>
+						}
                     </div>
                 </div>
             </aside>
