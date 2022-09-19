@@ -8,6 +8,7 @@ import { Line, Pie } from 'react-chartjs-2';
 import styles from '../styles/Master.module.scss'
 import Radial from './Radial'
 import PropModal from './PropModal'
+import Treasury from './Treasury'
 
 function DAO() {
 	ChartJS.register(
@@ -72,6 +73,8 @@ function DAO() {
 	})
 
 	const merged = [].concat.apply([], accurateYears).reverse()
+
+
 
 	const votesToAverage = useSelector((state)=>state.votingTotals)
 		
@@ -199,7 +202,7 @@ function DAO() {
 	const filter = [...new Set(agg)]
 	const nums ={}
 	agg.forEach(function (x) { nums[x] = (nums[x] || 0) + 1; });
-	//Final object with each wallet and it's vot
+
 	const arr = filter.map((item)=>{
 		return nums[item]
 	})
@@ -278,6 +281,7 @@ function DAO() {
 							<h1>Loading</h1>}
 						</div>
 					</aside>
+					<Treasury ens='orangedaoxyz.eth'/>
                     <h1>Average number of users voting across all proposals : <span style={{fontWeight:'500'}}>{(added/length).toFixed(2)?? 0}/{orange?.followersCount}</span></h1>
                     <h1>Proposals ↓</h1>
                     <div className={styles.props} >
